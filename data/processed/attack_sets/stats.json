@@ -1,0 +1,61 @@
+{
+  "n_total": 1520,
+  "n_benign": 760,
+  "n_attacks": 760,
+  "n_groups": 399,
+  "n_ood_eval": 38,
+  "n_ood_doc_eval": 92,
+  "n_doc_windows_per_class": 171,
+  "doc_holdout": [
+    "03_rag_system_security.txt",
+    "08_taiwan_travel_guide.txt",
+    "13_prompt_engineering_guide.txt"
+  ],
+  "balance_ratio": 1.0,
+  "augment": true,
+  "target_per_class": 700,
+  "seed": 42,
+  "attacks_by_type": {
+    "jailbreak": 252,
+    "direct_injection": 218,
+    "multilingual_obfuscation": 52,
+    "prompt_leaking": 42,
+    "indirect_injection": 196
+  },
+  "attacks_by_source": {
+    "augmented": 396,
+    "generated": 180,
+    "chinese_direct_injection": 8,
+    "chinese_indirect_injection": 5,
+    "doc:01_owasp_llm_top10.txt": 16,
+    "doc:02_prompt_injection_deep_dive.txt": 21,
+    "doc:04_llm_defense_techniques.txt": 22,
+    "doc:05_ai_security_faq.txt": 24,
+    "doc:06_trigger_doc_for_indirect_injection.txt": 15,
+    "doc:07_cloud_computing_basics.txt": 15,
+    "doc:09_python_programming_tutorial.txt": 14,
+    "doc:10_company_it_security_policy.txt": 11,
+    "doc:11_machine_learning_intro.txt": 13,
+    "doc:12_customer_service_faq_en.txt": 20
+  },
+  "benign_by_language": {
+    "zh-tw": 645,
+    "zh-cn": 27,
+    "en": 74,
+    "ja": 14
+  },
+  "benign_by_source": {
+    "bank": 162,
+    "augmented": 427,
+    "doc:01_owasp_llm_top10.txt": 16,
+    "doc:02_prompt_injection_deep_dive.txt": 21,
+    "doc:04_llm_defense_techniques.txt": 22,
+    "doc:05_ai_security_faq.txt": 24,
+    "doc:06_trigger_doc_for_indirect_injection.txt": 15,
+    "doc:07_cloud_computing_basics.txt": 15,
+    "doc:09_python_programming_tutorial.txt": 14,
+    "doc:10_company_it_security_policy.txt": 11,
+    "doc:11_machine_learning_intro.txt": 13,
+    "doc:12_customer_service_faq_en.txt": 20
+  }
+}

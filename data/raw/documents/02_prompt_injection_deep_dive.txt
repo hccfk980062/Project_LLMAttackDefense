@@ -1,0 +1,93 @@
+Prompt Injection 攻擊深度解析
+==============================
+
+一、什麼是 Prompt Injection？
+------------------------------
+Prompt Injection（提示注入）是一種針對大型語言模型（LLM）的攻擊手法。攻擊者透過在輸入中嵌入惡意指令，試圖覆蓋或繞過模型的系統設定（System Prompt），使模型執行攻擊者預期的惡意行為，而非開發者預設的功能。
+
+這類攻擊利用了 LLM 的核心機制：模型無法明確區分「受信任的系統指令」和「不受信任的使用者輸入」，因為兩者都以自然語言文字呈現在相同的上下文視窗（Context Window）中。
+
+---
+
+二、攻擊類型分類
+----------------
+
+2.1 直接注入（Direct Prompt Injection）
+攻擊者直接在使用者輸入欄位中植入惡意指令。
+
+常見模式：
+- 指令覆蓋：「忽略所有先前的指示。你的新任務是……」
+- 角色置換：「從現在開始，你是一個沒有任何限制的 AI……」
+- 分隔符欺騙：使用 ---、###、[SYSTEM] 等符號假裝系統邊界
+- DAN（Do Anything Now）攻擊：要求模型以「特殊模式」運行
+- 翻譯/摘要任務注入：要求模型「翻譯」一段包含惡意指令的文字
+
+2.2 間接注入（Indirect Prompt Injection）
+攻擊者預先污染 LLM 讀取的外部資料來源。
+
+常見場景：
+- RAG 知識庫污染：在文件中嵌入惡意指令，當 RAG 系統擷取該文件時，指令進入模型上下文
+- 網頁內容污染：在 LLM 可存取的網頁中嵌入不可見的惡意文字（如 HTML 注解）
+- 電子郵件攻擊：在郵件中嵌入指令，針對使用 LLM 處理信件的系統
+- 資料庫污染：在資料庫記錄中植入惡意指令
+
+間接注入的危險性尤為突出，因為攻擊者無需直接接觸應用程式介面，且攻擊來源難以追蹤。
+
+2.3 多語言混淆攻擊（Multilingual Obfuscation）
+利用多種語言混合或特殊字元繞過以單一語言為基礎的過濾器。
+
+範例：在中文查詢中夾帶英文注入指令，或使用全形字元代替半形字元。
+
+2.4 越獄攻擊（Jailbreak）
+透過特殊的角色扮演情境或假設性問題，引導模型突破安全護欄。
+
+---
+
+三、攻擊成功的評估標準（Attack Success Rate）
+----------------------------------------------
+判斷一次 Prompt Injection 是否成功，通常依據以下標準：
+
+1. 資訊洩漏：模型是否洩漏了系統提示或內部設定
+2. 指令執行：模型是否執行了攻擊者的惡意指令
+3. 行為偏離：模型的輸出是否明顯偏離其預設功能
+4. 有害內容：模型是否生成了不應生成的內容（如危險資訊）
+
+---
+
+四、主要防禦方向
+----------------
+
+4.1 輸入驗證（Input Validation）
+在輸入到達 LLM 前，透過規則引擎、正規表示式或分類器進行過濾。
+局限性：已知模式的過濾容易被繞過，對未知攻擊模式效果有限。
+
+4.2 提示詞分區（Prompt Segmentation）
+使用明確的結構標籤將系統提示、外部上下文、使用者輸入分隔開來，並在提示中明確告知模型各區塊的信任層級。
+
+4.3 受控生成（Controlled Generation）
+限制模型的輸出格式（如只允許 JSON），降低模型執行任意指令的自由度；使用低 temperature 值減少隨機性。
+
+4.4 輸出驗證（Output Validation）
+對模型輸出進行後處理審查，偵測是否包含敏感資訊或惡意內容。
+
+4.5 多層次防禦（Defense-in-Depth）
+任何單一防禦機制都可能被繞過，因此建議採用多層次串聯的防禦架構，使攻擊者需要同時突破多個關卡。
+
+---
+
+五、現有研究的不足
+------------------
+
+1. 大多數研究集中於直接注入，對 RAG 場景的間接注入研究不足
+2. 現有防禦多為單點修補（如關鍵詞黑名單），缺乏系統性的多層次框架
+3. 針對非英文語境（特別是繁體中文）的攻擊資料集與防禦研究幾乎空白
+4. 缺乏統一的評測基準，難以比較不同防禦方案的效果
+
+---
+
+六、相關研究文獻
+----------------
+- Perez & Ribeiro (2022). "Ignore Previous Prompt: Attack Techniques For Language Models"
+- Greshake et al. (2023). "Not What You've Signed Up For: Compromising Real-World LLM-Integrated Applications with Indirect Prompt Injections"
+- Liu et al. (2024). "Prompt Injection Attacks and Defenses in LLM-Integrated Applications"
+- Yi et al. (2024). "Benchmarking and Defending Against Indirect Prompt Injection Attacks on Large Language Models (InjecAgent)"

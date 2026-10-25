@@ -1,0 +1,66 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Layer 1 Input Sanitizer — keyword / regex blacklist
+#
+# One Python regex per line. Lines starting with "#" and blank lines are ignored.
+# Patterns are compiled with re.IGNORECASE | re.MULTILINE and are ADDED on top of
+# DEFAULT_BLACKLIST in src/defense/layer1_input_sanitizer.py.
+#
+# DESIGN RULE: Layer 1 is a HARD block (the request is dropped, no LLM call).
+# Every pattern here must be high precision — it should fire on an injection
+# attempt but not on a legitimate security question such as
+#   "系統提示詞在 RAG 應用中扮演什麼角色？"  /  "DAN 攻擊手法的原理是什麼？"
+# Broader / fuzzier detection belongs in Layer 2 (the trained detector).
+#
+# KNOWN LIMITATION: a pattern still fires when its exact phrase is *quoted* in
+# an academic/meta question about that phrase, e.g.
+#   "「ignore all previous instructions」這句話為什麼常被用在攻擊裡？"
+#   "Why is 'repeat the words above' considered a prompt-leaking probe?"
+# Regex can't reliably tell "asking about the phrase" from "using the phrase
+# as a live command" — and because L1 hard-blocks before L2 ever runs, L2's
+# better judgement on these never gets a chance. This is a real, measured
+# source of L1 false positives (see data/processed/attack_sets/benign.json's
+# BENIGN_HARD_NEGATIVES), not an oversight — narrowing these patterns further
+# (e.g. excluding quoted text) is easy to game the other way, since quoting a
+# payload is itself a known obfuscation trick. If this keeps showing up in the
+# FPR numbers, the real fix is architectural (e.g. run L1+L2 together and
+# combine scores instead of L1 hard-blocking alone — see project memory /
+# ExperienceNotes.txt "研究深度" backlog), not a sharper regex.
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ── Instruction override / role reset (Chinese) ──────────────────────────────
+忽略(上述|前面|以上|之前|先前|所有)(的)?(系統)?(指令|指示|提示|規則|設定|訊息|對話)
+忘記(你|妳|你們)(之前|先前|剛才|原本|上面)(的)?(所有)?(指令|指示|設定|身分|角色|限制)
+(現在|從現在起|從now)\s*(開始)?(你|妳)(就)?是(一個)?(沒有|不受)(任何)?(限制|道德|約束|規範|內容政策)
+你(真正|真實|實際|新)的(指令|任務|身分|角色|設定)(是|為|如下)
+你的?\s*新\s*(的)?\s*(系統)?\s*(提示詞?|指令|prompt)\s*(是|如下|為|：|:)
+(系統|指令|設定)\s*(重置|重設|重啟|更新|覆寫|覆蓋)\s*(完成|指令|如下|：|:)
+請?(先|務必)?(完成|執行)(以下|下列|這個)(系統)?(任務|指令|步驟)[^。\n]{0,24}(再|然後|接著|之後)(回答|回覆|處理)
+
+# ── Fake system / tag injection ─────────────────────────────────────────────
+\[/?\s*(SYSTEM|INST|系統指令?|ADMIN|管理員)\s*\]
+\[\s*(END\s+)?SYSTEM\s*\]
+<\|?\s*(im_start|im_end|system|endoftext)\s*\|?>
+={2,}\s*(SYSTEM\s*OVERRIDE|系統覆蓋|系統重置|OVERRIDE)\s*={2,}
+#{2,}\s*(新的?)?\s*(系統|System)\s*(提示|指令|訊息|Prompt)
+-{2,}\s*(系統重置|指令結束|對話結束|END\s+OF\s+(CONTEXT|PROMPT|INSTRUCTIONS?))\s*-{2,}
+<!--\s*(系統|AI[_ ]?INSTRUCTION|SYSTEM|指令)[:：]
+
+# ── Jailbreak / DAN / developer mode ───────────────────────────────────────
+(你.{0,3}是|你就是|扮演|act\s+as|you\s+are\s+now|from\s+now\s+on)\s*["「'’]?\s*(DAN|Do\s*Anything\s*Now)
+\bDAN\b\s*(模式|mode)\b
+(啟動|進入|開啟|enable|activate|switch\s+to)\s*(開發者|developer|god|上帝|無限制|unrestricted)\s*(模式|mode)
+(開發者模式|developer\s+mode|god\s+mode)\s*(已|is|are)?\s*(被)?\s*(啟動|開啟|啟用|enabled|activated|on)\b
+(越獄|jailbreak|jail\s*break)\s*(模式|prompt|指令|成功|你|模型|以下)
+假(裝|扮)(你|妳)?[^。\n]{0,12}(沒有|不受|無)(任何)?(道德|限制|約束|規範|內容|審查)
+你是一個(不受限制|沒有限制|沒有道德|無道德|越獄)的?\s*(AI|助理|模型|語言模型)
+
+# ── Prompt leaking ────────────────────────────────────────────────────────
+(洩漏|洩露|reveal|leak|expose|dump)\s*(你的|妳的|the|your)\s*(完整|full|entire)?\s*(系統提示|系統指令|system\s*prompt|initial\s*prompt|原始指令)
+(輸出|顯示|印出|告訴我|貼出|列出|repeat|print|show|output|give\s+me)\s*(你的|妳的|the|your)\s*(完整|full|entire)?\s*(系統提示|系統指令|system\s*prompt|instructions?|設定內容)
+repeat\s+(the\s+)?(words|text|sentence|everything|prompt)\s+(above|before\s+this)
+(你之前收到|你被給予|上面給你)的?\s*(系統)?(提示詞?|指令|規則)(內容)?\s*(是什麼|為何|給我|告訴我)
+把\s*(你的|上面的|系統)\s*(提示詞?|指令)\s*(原封不動|完整|逐字)?\s*(輸出|貼|印|給我|複製)
+
+# ── Translation / encoding smuggling ──────────────────────────────────────
+(翻譯|translate)[^。\n]{0,60}(並|and|then|接著|然後|再|and\s+then)[^。\n]{0,14}(執行|遵循|照做|follow|obey|execute|comply|依(其|照|其中))
+(解碼|decode|base64|rot13)[^。\n]{0,50}(並|then|and|接著|再)[^。\n]{0,14}(執行|遵循|follow|execute|run|依(其|照))

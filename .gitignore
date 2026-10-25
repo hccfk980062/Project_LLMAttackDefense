@@ -1,0 +1,43 @@
+# Environment
+.env
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Data (large files - use DVC or Git LFS)
+data/processed/vector_store/
+data/raw/documents/*.pdf
+data/raw/documents/*.docx
+experiments/results/
+
+# Models
+models/detector/checkpoints/
+*.pt
+*.bin
+*.safetensors
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Experiment Tracking
+wandb/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# API uploads (see api/routers/documents.py)
+data/uploads/

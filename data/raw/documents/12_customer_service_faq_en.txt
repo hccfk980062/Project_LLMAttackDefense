@@ -1,0 +1,65 @@
+CloudDesk Help Center — Frequently Asked Questions
+=================================================
+
+Account and Sign-in
+-------------------
+
+Q: How do I reset my password?
+A: Click "Forgot password" on the sign-in page and enter the email address linked to your account. You will receive a reset link that expires after 30 minutes. If the email does not arrive, please check your spam folder before contacting support.
+
+Q: Why was my account locked?
+A: For your protection, accounts are locked after five failed sign-in attempts within 15 minutes. The lock is lifted automatically after one hour. If you believe someone else is trying to access your account, please change your password and enable two-step verification.
+
+Q: How do I enable two-step verification?
+A: Go to Settings > Security > Two-step verification and follow the instructions. We support authenticator apps and hardware security keys. SMS codes are available but not recommended.
+
+---
+
+Billing
+-------
+
+Q: When will I be charged?
+A: Subscriptions are billed at the start of each billing cycle. Annual plans are charged once per year; monthly plans are charged on the same date each month.
+
+Q: Can I get a refund?
+A: Monthly plans can be cancelled at any time and remain active until the end of the current period, but partial months are not refunded. Annual plans can be refunded in full within 14 days of purchase.
+
+Q: How do I update my payment method?
+A: Open Settings > Billing > Payment methods. Add the new card first, set it as default, and then remove the old one. We never ask for your full card number by email or chat — please ignore any message that does.
+
+---
+
+Using the Product
+-----------------
+
+Q: How many team members can I invite?
+A: The Starter plan includes up to 5 members, the Team plan up to 50, and the Enterprise plan has no fixed limit.
+
+Q: How do I share a workspace with an external partner?
+A: Workspace owners can create a guest link under Share > Invite guests. Guests can view and comment but cannot export data or change settings. Guest links can be revoked at any time.
+
+Q: Is there an offline mode?
+A: Yes. The desktop app caches your recent documents so you can keep working without a connection. Changes are synced automatically when you reconnect. If two people edit the same paragraph offline, you will be asked to choose which version to keep.
+
+Q: What file types can I upload?
+A: PDF, DOCX, XLSX, PPTX, PNG, JPG and TXT files up to 200 MB each. Executable files are blocked for security reasons.
+
+---
+
+Privacy and Data
+----------------
+
+Q: Where is my data stored?
+A: Customer data is stored in the region you selected when you created your organization (US, EU, or Asia-Pacific). Data is encrypted at rest with AES-256 and in transit with TLS 1.2 or higher.
+
+Q: Do you use my documents to train AI models?
+A: No. Your content is never used to train our models or any third-party models. The optional AI assistant processes your request and discards it after the response is generated.
+
+Q: How do I export or delete my data?
+A: Administrators can export all organization data from Settings > Data > Export. To permanently delete your organization, open a request from the same page; deletion is completed within 30 days.
+
+---
+
+Contacting Support
+------------------
+Please include your organization name, a short description of the problem, and screenshots if possible. Our support team is available 24/7 for Enterprise customers and on weekdays from 9:00 to 18:00 (UTC+8) for all other plans. Typical response time is under four business hours.

@@ -1,0 +1,29 @@
+detector:
+  base_model: "bert-base-multilingual-cased"
+  max_length: 512
+  # Effective batch = batch_size x gradient_accumulation_steps = 32. Per-step
+  # batch kept at 8 because CPU training of 320-char document windows at
+  # batch 32 exhausted a 16 GB machine (pagefile growth, then a crash).
+  batch_size: 8
+  gradient_accumulation_steps: 4
+  learning_rate: 2.0e-5
+  num_epochs: 5
+  warmup_ratio: 0.1
+  weight_decay: 0.01
+  output_dir: "models/detector/checkpoints"
+  save_best_only: true
+  save_total_limit: 2
+  early_stopping_patience: 2
+
+  training_data:
+    benign:
+      path: "data/processed/attack_sets/benign.json"
+    malicious:
+      path: "data/processed/attack_sets/all_attacks.json"
+    val_split: 0.15
+    test_split: 0.15
+    augment: true
+
+# Runtime parameters for every defense layer (L1 blacklist, L4 format, L5 audit
+# model/prompt, ...) live in configs/default.yaml under defense.layers — that is
+# what DefensePipeline.from_config reads. This file only holds L2 training.
